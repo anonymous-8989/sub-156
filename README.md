@@ -62,7 +62,7 @@ with env.begin() as txn:
 
 ```
 
-## 🎉🎉🎉 Surg-FM Foundation Model
+## 🎉🎉🎉 Surg-FM Foundation Model 
 
 You can download the SurgFM checkpoint within the provided link with the password.
 
