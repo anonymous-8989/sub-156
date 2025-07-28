@@ -71,7 +71,7 @@ You can download the SurgFM checkpoint within the provided link with the passwor
 Follow the provided scripts to launch your own SurgFM training.
 
 ```bash
-$ python3 -m torch.distributed.run --nproc_per_node=8 --nnodes=1 surgfm/surgfm.py --arch convnext_large --data_path 'Surg-3M dataset lmdb path' --output_dir 'your path to store the trained foundation model' --batch_size_per_gpu 40 --num_workers 10
+$ python3 -m torch.distributed.run --nproc_per_node=8 --nnodes=1 surgfm/surgfm.py --arch convnext_large --data_path 'Surg-3M dataset lmdb path' --output_dir 'your path to store the trained foundation model' --batch_size_per_gpu 24 --num_workers 10
 ```
 
 ### 🚀 SurgFM inference
