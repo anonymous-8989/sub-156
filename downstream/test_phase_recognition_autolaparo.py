@@ -91,20 +91,12 @@ class StringToIndexTransform:
 
 
 def setup_tensorboard(log_dir) -> torch.utils.tensorboard.SummaryWriter:
-    """
-    @param[in]  log_dir  Path to the Tensorboard log directory.
-    @returns the Tensorboard writer.
-    """
     writer = torch.utils.tensorboard.SummaryWriter(log_dir=log_dir)
     return writer
 
 
 def valid(net: torch.nn, valid_dl, loss_func, device='cuda'):
-    """
-    @param[in, out]  net        PyTorch model.
-    @param[in]       valid_dl    PyTorch dataloader for the testing data.
-    @param[in]       loss_func  Pointer to the loss function.
-    """
+
     valid_loss = 0
     correct = 0
     total = 0
@@ -137,10 +129,7 @@ def valid(net: torch.nn, valid_dl, loss_func, device='cuda'):
             targets_array = targets.detach().cpu().numpy()
             predicted_array = predicted.detach().cpu().numpy()
             targets_f1 = np.concatenate((targets_f1, targets_array))
-            predicted_f1 = np.concatenate((predicted_f1, predicted_array))
-            #print(targets_f1)
             different_indices = np.where(targets_f1 != predicted_f1)[0]
-            #print(different_indices)
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
@@ -160,31 +149,15 @@ def valid(net: torch.nn, valid_dl, loss_func, device='cuda'):
     return display_loss, display_F1, display_accuracy, display_precision, display_recall
 
 
-def help(short_option):
-    """
-    @returns The string with the help information for each command line option.
-    """
-    help_msg = {
-        '--data':    'Path to the images data directory (required: True)',
-        '--labels':    'Path to the target data(required: True)',
-        '--models':  'Path to the checkpoint file (required: True)',
-        '--bs':      'Batch size used for testing (required: True)',
-        '--kfold':      'how many k-fold validation are used here (required: True)',
-    }
-    return help_msg[short_option]
 
 
 def parse_cmdline_params():
     """@returns The argparse args object."""
     args = argparse.ArgumentParser(description='PyTorch')
-    args.add_argument('--lmdb', required=True, type=str,
-                      help=help('--data'))
-    args.add_argument('--labels', required=True, type=str,
-                      help=help('--labels'))
-    args.add_argument('--models', required=False, type=str,
-                      help=help('--models'))
-    args.add_argument('--bs', required=True, type=int,
-                      help=help('--bs'))
+    args.add_argument('--lmdb', required=True, type=str)
+    args.add_argument('--labels', required=True, type=str)
+    args.add_argument('--models', required=False, type=str)
+    args.add_argument('--bs', required=True, type=int)
     args.add_argument('--kfold', required=True, type=int)
     
     return  args.parse_args()
