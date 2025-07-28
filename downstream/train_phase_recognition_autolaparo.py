@@ -18,73 +18,34 @@ import time
 import random
 import json
 from sklearn.metrics import f1_score, accuracy_score
-# My imports
+
 
 from .load_lmdb_autolaparo import Dataset, StringToIndexTransform, SubsetDataset, BalancedBatchSampler, EarlyStopping, build_model, valid, setup_tensorboard, build_preprocessing_transforms
 
-def help(option):
-    """
-    @returns The string with the help information for each command line option.
-    """
-    help_msg = {
-        '--lr' :        'Learning rate (required: True)',
-        '--opt':        'Optimizer (required: True)', 
-        '--nepochs':    'Number of epochs (required: True)',
-        '--bs':         'Training batch size (required: True)',
-        '--cpdir':      'Path to the checkpoint directory (required: True)', 
-        '--logdir':     'Path to the log directory (required: True)',
-        '--cpint':      'Checkpoint interval (required: True)',  
-        '--lmdb':     'Path to the images directory (required: True)',
-        '--labels':     'Path to the labels json (required: True)',
-        '--kfold':      'fold number for kfold validation',
-        '--resume':     'Path to the checkpoint file (required: False)',
-        '--seed':       'Random seed (required: False)',
-        '--pretrained': 'Initialise model with weights pretrained ' \
-                         + 'on ImageNet',
-        '--pretrained-weights': 'Initialise model with weights pretrained ' \
-                         + 'on ImageNet',
-    }
-    return help_msg[option]
 
 
 def parse_cmdline_params():
-    """@returns The argparse args object."""
     args = argparse.ArgumentParser(description='PyTorch')
-    args.add_argument('--lr', required=True, type=float, 
-                      help=help('--lr'))  
-    args.add_argument('--opt', required=True, type=str, 
-                      help=help('--opt'))
-    args.add_argument('--nepochs', required=True, type=int, 
-                      help=help('--nepochs'))
-    args.add_argument('--bs', required=True, type=int,
-                      help=help('--bs'))
-    args.add_argument('--cpdir', required=True, type=str,
-                      help=help('--cpdir'))
-    args.add_argument('--logdir', required=True, type=str,
-                      help=help('--logdir'))
-    args.add_argument('--cpint', required=True, type=int, default=10,
-                      help=help('--cpint'))
-    args.add_argument('--kfold', required=True, type=int, default=1,
-                      help=help('--kfold'))
-    args.add_argument('--lmdb', required=True, type=str,
-                      help=help('--lmdb'))
-    args.add_argument('--labels', required=True, type=str,
-                      help=help('--labels'))
-    args.add_argument('--resume', required=False, type=str, default=None,
-                      help=help('--resume'))
-    args.add_argument('--seed', required=False, type=int, default=None,
-                      help=help('--seed'))
-    args.add_argument('--pretrained', required=False, type=bool, default=None,
-                      help=help('--pretrained'))
-    args.add_argument('--pretrained-weights', required=False, type=str, default=None,
-                      help=help('--pretrained-weights'))
+    args.add_argument('--lr', required=True, type=float)  
+    args.add_argument('--opt', required=True, type=str)
+    args.add_argument('--nepochs', required=True, type=int)
+    args.add_argument('--bs', required=True, type=int)
+    args.add_argument('--cpdir', required=True, type=str)
+    args.add_argument('--logdir', required=True, type=str)
+    args.add_argument('--cpint', required=True, type=int, default=10)
+    args.add_argument('--kfold', required=True, type=int, default=1)
+    args.add_argument('--lmdb', required=True, type=str)
+    args.add_argument('--labels', required=True, type=str)
+    args.add_argument('--resume', required=False, type=str, default=None)
+    args.add_argument('--seed', required=False, type=int, default=None)
+    args.add_argument('--pretrained', required=False, type=bool, default=None)
+    args.add_argument('--pretrained-weights', required=False, type=str, default=None)
     
     return  args.parse_args()
 
 
 def load_dataset(lmdb_path, label_path, output_json, class_mapping, train_preproc_tf = None, valid_preproc_tf = None, k: int = 5, train_bs: int = 512, valid_bs: int = 100, num_workers: int = 20, valid_size: float = 0.1):
 
-    # Load training and validation sets
     print('loading dataset')
     train_ds = Dataset(lmdb_path=lmdb_path, label_path=label_path)
 
@@ -113,7 +74,6 @@ def load_dataset(lmdb_path, label_path, output_json, class_mapping, train_prepro
 
     video_ids = list(class_ids.keys())
 
-    #np.random.shuffle(video_ids)
     for i in range(0, k):
         start = int(80/ sepa * i)
         gap_eachclass = int(80 / sepa)
@@ -159,19 +119,12 @@ def build_optimizer(net, lr, opt: str = "adamw"):
 
 
 def resume(checkpoint_path, net, optimizer, scheduler, scaler):
-     
-    # Check that the checkpoint directory exists
     if not os.path.isfile(checkpoint_path):
         raise FileNotFoundError('[ERROR] You want to resume from the last checkpoint, ' \
             + 'but there is not directory called "checkpoint"')
     
-    # Load state
     state = torch.load(checkpoint_path)
-    
-    # Update model with saved weights
     net.load_state_dict(state['net'])
-
-    # Update optimizer with saved params
     optimizer.load_state_dict(state['optimizer'])
 
     # Update scheduler with saved params
@@ -179,18 +132,13 @@ def resume(checkpoint_path, net, optimizer, scheduler, scaler):
 
     # Update scaler with saved params
     scaler.load_state_dict(state['scaler'])
-    
-    print('[INFO] Resuming from checkpoint ...')
 
     return state['lowest_valid_loss'], state['epoch'] + 1
 
 
 def train(net: torch.nn, train_dl, loss_func, optimizer, scheduler, scaler, device='cuda'):
 
-    # Set network in train mode
     net.train()
-
-    # Create progress bar
     pbar = tqdm.tqdm(enumerate(train_dl), total=len(train_dl))
 
     # Run forward-backward over all the samples
@@ -220,6 +168,7 @@ def train(net: torch.nn, train_dl, loss_func, optimizer, scheduler, scaler, devi
         predicted_array = predicted.detach().cpu().numpy()
         targets_f1 = np.concatenate((targets_f1, targets_array))
         predicted_f1 = np.concatenate((predicted_f1, predicted_array))
+        
         # Display loss and F1 score on the progress bar
         display_loss = train_loss / (batch_idx + 1)
         accuracy = accuracy_score(targets_f1,predicted_f1)
@@ -229,8 +178,6 @@ def train(net: torch.nn, train_dl, loss_func, optimizer, scheduler, scaler, devi
         pbar.set_description("Training loss: %.3f | F1 score: %.3f%% | Accuracy score: %.3f%% (%d/%d) | LR: %.2E" % (display_loss, 
             display_F1, display_accuracy, correct, total, scheduler.get_last_lr()[0]))
 
-    # Add step to the LR cosine scheduler
-    #scheduler.step(epoch - 1)
     scheduler.step()
 
     return display_loss, display_F1
@@ -241,7 +188,6 @@ def main(args, train_dl=None, valid_dl=None):
 
     num_classes = len(class_mapping)
     
-    # Fix random seeds for reproducibility
     if not os.path.isdir(args.cpdir):
         os.mkdir(args.cpdir)
     if args.seed is None:
@@ -254,6 +200,7 @@ def main(args, train_dl=None, valid_dl=None):
     # Prepare preprocessing layers
     train_preproc_tf, valid_preproc_tf = build_preprocessing_transforms()
     print("before loading dataset time:", datetime.now())
+    
     # Get dataloaders for training and testing
     if train_dl is None and valid_dl is None:
         train_ds, train_lists, valid_lists = load_dataset(lmdb_path=args.lmdb, label_path=args.labels, output_json = args.cpdir, class_mapping = class_mapping, train_preproc_tf=train_preproc_tf, valid_preproc_tf=valid_preproc_tf, k=args.kfold, train_bs=args.bs, valid_bs=args.bs)
@@ -310,7 +257,7 @@ def main(args, train_dl=None, valid_dl=None):
         train_dl = torch.utils.data.DataLoader(train_dataset, batch_size=args.bs, sampler=BalancedBatchSampler(data_indices=train_dataset.get_indices(), index_label=train_ds.index_img(), class_mapping=class_mapping), num_workers=8)
         valid_dl = torch.utils.data.DataLoader(valid_dataset, batch_size=args.bs, num_workers=8)
         
-        early_stopping = EarlyStopping(patience=10, min_delta=0.001)  # Set patience and min_delta as needed
+        early_stopping = EarlyStopping(patience=10, min_delta=0.001)
         for epoch in range(start_epoch, args.nepochs):  
             print(f"\n[INFO] Fold: {fold} Epoch: {epoch}")
             start = time.time()
