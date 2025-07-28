@@ -52,7 +52,6 @@ class Dataset(VisionDataset):
             labels = json.load(f)
             image_names = list(labels.keys())
         with self.env.begin() as txn:
-
             for name in tqdm.tqdm(image_names, total = len(image_names)):
                 img_key = f'img_{name}'.encode('utf-8')
                 
@@ -124,7 +123,6 @@ class SubsetDataset(Dataset):
         for index in tqdm.tqdm(range(len(self.indices)), total = len(self.indices)):
             original_idx = self.indices[index]
             
-
             sample = dataset[original_idx]
             self.data.append(sample[0])
             self.targets.append(sample[1])
@@ -155,7 +153,7 @@ class BalancedBatchSampler(torch.utils.data.sampler.Sampler):
         self.dataset = dict()
         self.balanced_max = 0
         self.class_mapping = class_mapping
-        # Save all the indices for all the classes
+        
         for idx in range(0, len(data_indices)):
             label = self._get_label(idx=idx, index_label=index_label, indices=data_indices)
             if label not in self.dataset:
@@ -246,7 +244,6 @@ def build_preprocessing_transforms(size: int = 384, randaug_n: int = 2,
         torchvision.transforms.RandomHorizontalFlip(),
         torchvision.transforms.RandomRotation(degrees=10, fill=0),
         torchvision.transforms.ToTensor(),
-        #Imagenet
         torchvision.transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
     ])
 
@@ -307,9 +304,9 @@ def valid(net: torch.nn, valid_dl, loss_func, device='cuda'):
             # Display loss and top-1 f1 score on the progress bar 
             display_loss = valid_loss / (batch_idx + 1)
             accuracy = accuracy_score(targets_f1,predicted_f1)
-            precision = precision_score(targets_f1,predicted_f1, average='weighted')
-            recall = recall_score(targets_f1,predicted_f1, average='weighted')
-            F1_scores = f1_score(targets_f1,predicted_f1, average='weighted')
+            precision = precision_score(targets_f1,predicted_f1, average='macro')
+            recall = recall_score(targets_f1,predicted_f1, average='macro')
+            F1_scores = f1_score(targets_f1,predicted_f1, average='macro')
             display_accuracy = 100. * accuracy
             display_precision = 100. * precision
             display_recall = 100. * recall
