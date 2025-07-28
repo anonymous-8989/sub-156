@@ -3,7 +3,7 @@
 </p>
 
 
-
+ 
 This is the anonymous repository corresponding to the AAAI AISI 2026 submission: "Surg-3M: A Dataset and Foundation Model for Perception in Surgical Settings". **This repository is intended for AAAI AISI 2026 reviewers only.**
 
 
