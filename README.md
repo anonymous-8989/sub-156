@@ -6,14 +6,14 @@
  
 This is the anonymous repository corresponding to the AAAI AISI 2026 submission: "Surg-3M: A Dataset and Foundation Model for Perception in Surgical Settings". **This repository is intended for AAAI AISI 2026 reviewers only.**
 
-
+ 
 ## 🔥🔥🔥 Surg-3M Dataset
 You can download Surg-3M dataset and SurgFM foundation model by [this link](https://mega.nz/folder/GVkgDQKZ). 
 **The password to decrypt it is included in the first section of the supplementary material submitted for review.**
 For storage reasons, we resized the images and saved them in LMDB format at 1 fps.
 
 The video annotation file can be downloaded here: [labels.json](https://github.com/anonymous-8989/sub-156/blob/main/labels.json)
-
+ 
 ### 🎥 Demo
 
 
