@@ -110,7 +110,7 @@ $ python3 downstream/test_phase_recognition_autolaparo.py --lmdb 'path/to/downst
 
 ## 🏃‍♂️🏃‍♂️🏃‍♂️ Recreate Surg-3M dataset From Scratch
 
-Alternatively, you can recreate our Surg-3M dataset from scratch to acquire the complete Surg-3M videos at 25 fps.
+Alternatively, you can recreate our Surg-3M dataset from scratch to acquire the complete Surg-3M videos.
 
 
 ### 🧱 Data Curation Pipeline
