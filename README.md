@@ -1,14 +1,9 @@
-<p align="center">
-<img src="https://github.com/user-attachments/assets/620dfa36-aab8-44d8-be5d-37d5e8e427ca" width="70%" height="auto">
-</p>
 
+This is the anonymous repository corresponding to the AAAI AISI 2026 submission: "LEMON: A Large Endoscopic MONocular Dataset and Foundation Model for Perception in Surgical Settings". **This repository is intended for AAAI AISI 2026 reviewers only.**
 
  
-This is the anonymous repository corresponding to the AAAI AISI 2026 submission: "Surg-3M: A Dataset and Foundation Model for Perception in Surgical Settings". **This repository is intended for AAAI AISI 2026 reviewers only.**
-
- 
-## 🔥🔥🔥 Surg-3M Dataset
-You can download Surg-3M dataset and SurgFM foundation model by [this link](https://mega.nz/folder/GVkgDQKZ). 
+## 🔥🔥🔥 LEMON Dataset
+You can download LEMON dataset and LemonFM foundation model by [this link](https://mega.nz/folder/GVkgDQKZ). 
 **The password to decrypt it is included in the first section of the supplementary material submitted for review.**
 For storage reasons, we resized the images and saved them in LMDB format at 1 fps.
 
@@ -33,7 +28,7 @@ Install the following dependencies in your local setup:
 
 ### 🔗 Load Dataset 
 
-Using the following code to load the Surg-3M dataset LMDB and its annotation file:
+Using the following code to load the LEMON dataset LMDB and its annotation file:
 ```python
 import lmdb
 import numpy as np
@@ -49,7 +44,7 @@ for video in annotation:
    surgery_type = 'robotic' if video['robotic'] else 'non-robotic'
 
 
-# Load Surg-3M dataset
+# Load LEMON dataset
 # Open the LMDB environment in read-only mode
 env = lmdb.open('lmdb_path', readonly=True, lock=False, readahead=False)
 with env.begin() as txn:
@@ -64,27 +59,27 @@ with env.begin() as txn:
 
 ## 🎉🎉🎉 Surg-FM Foundation Model 
 
-You can download the SurgFM checkpoint within the provided link with the password.
+You can download the LemonFM checkpoint within the provided link with the password.
 
-### 🛠️ SurgFM Training
+### 🛠️ LemonFM Training
 
-Follow the provided scripts to launch your own SurgFM training.
+Follow the provided scripts to launch your own LemonFM training.
 
 ```bash
-$ python3 -m torch.distributed.run --nproc_per_node=8 --nnodes=1 surgfm/surgfm.py --arch convnext_large --data_path 'Surg-3M dataset lmdb path' --output_dir 'your path to store the trained foundation model' --batch_size_per_gpu 24 --num_workers 10
+$ python3 -m torch.distributed.run --nproc_per_node=8 --nnodes=1 LemonFM/LemonFM.py --arch convnext_large --data_path 'LEMON dataset lmdb path' --output_dir 'your path to store the trained foundation model' --batch_size_per_gpu 24 --num_workers 10
 ```
 
-### 🚀 SurgFM inference
+### 🚀 LemonFM inference
 The code below shows how to run our Surg-FM foundation model to get a feature vector for any given surgical video frame:
 
    ```python
    import torch
    from PIL import Image
-   from src.model_loader import build_SurgFM
+   from src.model_loader import build_LemonFM
 
-   # Load the pre-trained SurgFM model
-   surgfm = build_SurgFM(pretrained_weights = 'your path to the SurgFM')
-   surgfm.eval()
+   # Load the pre-trained LemonFM model
+   LemonFM = build_LemonFM(pretrained_weights = 'your path to the LemonFM')
+   LemonFM.eval()
 
    # Load the image and convert it to a PyTorch tensor
    img_path = 'path/to/your/image.jpg'
@@ -93,14 +88,14 @@ The code below shows how to run our Surg-FM foundation model to get a feature ve
    img_tensor = torch.tensor(np.array(img)).unsqueeze(0).to('cuda')
 
    # Extract features from the image using the ResNet50 model
-   outputs = surgfm(img_tensor)
+   outputs = LemonFM(img_tensor)
    ```
 
 
-### 🚀 Example of fine-tuning SurgFM for surgical phase recognition
+### 🚀 Example of fine-tuning LemonFM for surgical phase recognition
 
 ```bash
-$ python3 downstream/train_phase_recognition_autolaparo.py --lr 1e-3 --opt adamW --nepochs 100 --bs 512 --cpdir 'path/to/store/checkpoint' --logdir 'path/to/store/log' --lmdb 'path/to/downstream_task/lmdb' --labels 'path/to/downstream_task/annotation' --seed 30 --pretrained-weights 'path/to/our/SurgFM.pth'
+$ python3 downstream/train_phase_recognition_autolaparo.py --lr 1e-3 --opt adamW --nepochs 100 --bs 512 --cpdir 'path/to/store/checkpoint' --logdir 'path/to/store/log' --lmdb 'path/to/downstream_task/lmdb' --labels 'path/to/downstream_task/annotation' --seed 30 --pretrained-weights 'path/to/our/LemonFM.pth'
 ```
 
 ```bash
@@ -108,14 +103,14 @@ $ python3 downstream/test_phase_recognition_autolaparo.py --lmdb 'path/to/downst
 ```
 
 
-## 🏃‍♂️🏃‍♂️🏃‍♂️ Recreate Surg-3M dataset From Scratch
+## 🏃‍♂️🏃‍♂️🏃‍♂️ Recreate LEMON dataset From Scratch
 
-Alternatively, you can recreate our Surg-3M dataset from scratch to acquire the complete Surg-3M videos.
+Alternatively, you can recreate our LEMON dataset from scratch to acquire the complete LEMON videos.
 
 
 ### 🧱 Data Curation Pipeline
 
-You can use our code of the data curation pipeline and provided annotation file (["*labels.json*"](https://github.com/anonymous-8989/sub-156/blob/main/labels.json)) to recreate the whole Surg-3M dataset.
+You can use our code of the data curation pipeline and provided annotation file (["*labels.json*"](https://github.com/anonymous-8989/sub-156/blob/main/labels.json)) to recreate the whole LEMON dataset.
 
 1. Get your Youtube cookie:
 
@@ -130,13 +125,13 @@ You can use our code of the data curation pipeline and provided annotation file 
    $ python3 src/video_downloader.py --video-path '../labels.json' --output 'your path to store the downloaded videos' --cookies 'your YouTube cookie file'
    ```
 
-3. Curate the downloaded original videos as Surg-3M video dataset. In detail, use the video_processor to classify each frame as either 'surgical' or 'non-surgical', then remove the beginning and end segments of non-surgical content from the videos, and mask the non-surgical regions in 'surgical' frames and the entire 'non-surgical' frames.
+3. Curate the downloaded original videos as LEMON video dataset. In detail, use the video_processor to classify each frame as either 'surgical' or 'non-surgical', then remove the beginning and end segments of non-surgical content from the videos, and mask the non-surgical regions in 'surgical' frames and the entire 'non-surgical' frames.
 
    ```bash
    $ python3 src/video_processor.py --input 'your original downloaded video storage path' --input-json '../labels.json' --output 'your path to store the curated videos and their corresponding frame annotation files' --classify-models 'frame classification model' --segment-models 'non-surgical object detection models'
    ```
 
-4. Process the Surg-3M video dataset as Surg-3M image dataset (For foundation model pre-training).
+4. Process the LEMON video dataset as LEMON image dataset (For foundation model pre-training).
 
    ```bash
    $ python3 src/create_lmdb.py --video-folder 'your directory containing the curated videos and their corresponding frame annotation files' --output-json 'your path for the json file to verify the videos and labels alignment' --lmdb-path 'your lmdb storage path'
