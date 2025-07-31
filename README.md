@@ -57,7 +57,7 @@ with env.begin() as txn:
 
 ```
 
-## 🎉🎉🎉 Surg-FM Foundation Model 
+## 🎉🎉🎉 LemonFM Foundation Model 
 
 You can download the LemonFM checkpoint within the provided link with the password.
 
