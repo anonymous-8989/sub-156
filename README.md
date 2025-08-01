@@ -3,9 +3,9 @@ This is the anonymous repository corresponding to the AAAI AISI 2026 submission:
 
  
 ## 🔥🔥🔥 LEMON Dataset
-You can download LEMON dataset and LemonFM foundation model by [this link](https://mega.nz/folder/GVkgDQKZ). 
+To facilitate the download, sharing, and review of the dataset, we have significantly reduced its size to a more manageable level. Specifically, we have downsampled videos to 1 frame per second (fps), downsized their resolution to below 640x360 pixels, and stored them in an LMDB format (approximately 400GB of storage space). You can download LEMON dataset and LemonFM foundation model by [this link](https://mega.nz/folder/GVkgDQKZ). 
 **The password to decrypt it is included in the first section of the supplementary material submitted for review.**
-For storage reasons, we resized the images and saved them in LMDB format at 1 fps.
+
 
 The video annotation file can be downloaded here: [labels.json](https://github.com/anonymous-8989/sub-156/blob/main/labels.json)
  
